@@ -1,0 +1,13 @@
+# Frontend dependencies and generated assets
+frontend/node_modules/
+frontend/dist/
+frontend/wailsjs/
+
+# Wails build products and local release archives
+build/bin/
+wspr-beacon.app/
+*.zip
+
+# Local editor and operating-system files
+.DS_Store
+frontend/package.json.md5
