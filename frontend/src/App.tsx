@@ -27,6 +27,13 @@ type Entry = {
   frequency: number;
   enabled: boolean;
 };
+type UpdateInfo = {
+  currentVersion: string;
+  latestVersion: string;
+  available: boolean;
+  assetURL: string;
+  notes: string;
+};
 type Backend = {
   GetStatus: () => Promise<Status>;
   GetConfig: () => Promise<Config>;
@@ -40,6 +47,8 @@ type Backend = {
   Disconnect: () => Promise<void>;
   ApplyConfig: (config: Config) => Promise<string>;
   SaveSchedule: (entries: Entry[]) => Promise<void>;
+  CheckForUpdate: () => Promise<UpdateInfo>;
+  InstallUpdate: (assetURL: string) => Promise<void>;
 };
 declare global {
   interface Window {
@@ -151,7 +160,7 @@ function App() {
     grid: "JO89",
     useGPS: false,
     power: 23,
-    frequency: 14095600,
+    frequency: 14097100,
   });
   const [draftDirty, setDraftDirty] = useState(false);
   const [status, setStatus] = useState<Status>({
@@ -174,7 +183,9 @@ function App() {
       "overview",
     ),
     [notice, setNotice] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null),
+    [checkingUpdate, setCheckingUpdate] = useState(false);
   const load = useCallback(async () => {
     const service = api();
     if (!service) return;
@@ -241,6 +252,32 @@ function App() {
       );
     } catch (error) {
       setNotice(`Kunde inte ändra driftläge: ${String(error)}`);
+    }
+  };
+  const checkForUpdate = async () => {
+    setCheckingUpdate(true);
+    try {
+      const result = await api()?.CheckForUpdate();
+      if (!result) return;
+      setUpdateInfo(result);
+      setNotice(
+        result.available
+          ? `Version ${result.latestVersion} är tillgänglig.`
+          : `Du har senaste versionen (${result.currentVersion}).`,
+      );
+    } catch (error) {
+      setNotice(`Kunde inte söka efter uppdatering: ${String(error)}`);
+    } finally {
+      setCheckingUpdate(false);
+    }
+  };
+  const installUpdate = async () => {
+    if (!updateInfo?.assetURL) return;
+    setNotice(`Hämtar version ${updateInfo.latestVersion}. Appen startar om automatiskt.`);
+    try {
+      await api()?.InstallUpdate(updateInfo.assetURL);
+    } catch (error) {
+      setNotice(`Kunde inte installera uppdateringen: ${String(error)}`);
     }
   };
   const connect = async (simulated: boolean) => {
@@ -327,7 +364,18 @@ function App() {
             <small>{scheduleEnabled ? "Schemaläge" : "Manuellt läge"}</small>
           </div>
         </div>
-        <p className="version">WSPR Beacon · lokal styrning</p>
+        <div className="updater">
+          <button className="update-check" disabled={checkingUpdate} onClick={checkForUpdate}>
+            <Icon name="refresh" />
+            {checkingUpdate ? "Söker..." : "Sök uppdatering"}
+          </button>
+          {updateInfo?.available && (
+            <button className="update-install" onClick={installUpdate}>
+              Hämta v{updateInfo.latestVersion} och starta om
+            </button>
+          )}
+        </div>
+        <p className="version">WSPR Beacon · v{updateInfo?.currentVersion ?? "0.9.0"}</p>
       </aside>
       <section className="workspace">
         <header className="topbar">

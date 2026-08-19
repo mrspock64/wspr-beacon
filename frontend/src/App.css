@@ -75,6 +75,41 @@
   font-size: 11px;
   margin-top: 4px;
 }
+
+.updater {
+  padding: 0 9px;
+  margin-top: 4px;
+}
+
+.update-check,
+.update-install {
+  width: 100%;
+  border-radius: 5px;
+  padding: 8px 9px;
+  font-size: 11px;
+  text-align: left;
+}
+
+.update-check {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: #b8c1ba;
+  border: 1px solid #3b4542;
+  background: transparent;
+}
+
+.update-check .icon {
+  width: 14px;
+}
+
+.update-install {
+  margin-top: 7px;
+  border: 0;
+  background: #ffc343;
+  color: #19170f;
+  font-weight: 800;
+}
 .version {
   padding: 0 9px;
   margin: 5px 0 0;

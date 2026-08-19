@@ -14,9 +14,13 @@ En lokal desktop-app för WSPR Beacon firmware v1.02. Appen är byggd med Go och
 
 ## Säker schemaläggning
 
-Beaconen sänder på jämna minuter och en sändning tar cirka 110 sekunder. Därför försöker appen endast tillämpa schemat under de sista åtta sekunderna av den efterföljande udda minuten (sekund 52-59). Manuella ändringar blockeras under en beräknad aktiv sändning.
+Beaconen sänder på jämna minuter och en sändning tar cirka 110 sekunder. Därför försöker appen endast tillämpa schemat under de sista åtta sekunderna av den efterföljande udda minuten (sekund 52-59). Manuella ändringar är alltid tillgängliga; enheten bekräftar när den faktiskt har tagit emot dem.
 
 Schema och den senast använda profilen sparas lokalt i användarens konfigurationsmapp. Konfiguration som har bekräftats av beaconen sparas dessutom av enheten i EEPROM.
+
+## Uppdateringar
+
+Appen söker efter nya versioner på projektets GitHub Releases-sida via knappen **Sök uppdatering**. Om en ny macOS-version finns visas en knapp för hämtning. När den klickas hämtar appen uppdateringen, ersätter den aktuella app-bundlen och startar om automatiskt. Uppdateringar kräver att appen körs från `wspr-beacon.app` och är för närvarande automatiska på macOS Apple Silicon.
 
 ## Utveckling
 
